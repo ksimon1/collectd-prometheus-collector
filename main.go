@@ -13,12 +13,12 @@ func main() {
 	var (
 		collectdURL  string
 		fileLocation string
-		graceTimeout int
+		pollInterval int
 	)
 
 	flag.StringVar(&collectdURL, "collectdURL", "", "collectd URL *required")
 	flag.StringVar(&fileLocation, "fileLocation", "", "location of file to write in *required")
-	flag.IntVar(&graceTimeout, "wait", 15, "collectd URL")
+	flag.IntVar(&pollInterval, "pollInterval", 15, "poll interval")
 	flag.Parse()
 
 	if collectdURL == "" {
@@ -42,7 +42,7 @@ func main() {
 			}
 		}
 
-		time.Sleep(time.Duration(graceTimeout) * time.Second)
+		time.Sleep(time.Duration(pollInterval) * time.Second)
 	}
 }
 
