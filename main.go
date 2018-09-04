@@ -2,10 +2,11 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 )
 
@@ -32,13 +33,13 @@ func main() {
 	for {
 		data, err := getPrometheusData(collectdURL)
 		if err != nil {
-			fmt.Println("could not get data from collectd: ", err.Error())
+			log.Println("could not get data from collectd: ", err.Error())
 		}
 
 		if len(data) > 0 {
 			err = writeToFile(fileLocation, data)
 			if err != nil {
-				fmt.Println("could not write data to file: ", err.Error())
+				log.Println("could not write data to file: ", err.Error())
 			}
 		}
 
@@ -51,11 +52,17 @@ func getPrometheusData(collectdURL string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	defer r.Body.Close()
 
 	return ioutil.ReadAll(r.Body)
 }
 
 func writeToFile(fileLocation string, prometheusData []byte) error {
+	pathToFile := strings.TrimSuffix(fileLocation, fileLocation[strings.LastIndex(fileLocation, "/"):])
+	if _, err := os.Stat(pathToFile); os.IsNotExist(err) {
+		log.Fatalln("file location is not accessible")
+	}
+
 	return ioutil.WriteFile(fileLocation, prometheusData, 0644)
 }
