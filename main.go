@@ -12,25 +12,25 @@ import (
 
 func main() {
 	var (
-		collectdURL      string
-		fileLocation     string
-		pollInterval     int
-		removeLastColumn bool
+		collectdURL     string
+		fileLocation    string
+		pollInterval    int
+		removeTimestamp bool
 	)
 
-	flag.StringVar(&collectdURL, "collectdURL", "", "collectd URL *required")
-	flag.StringVar(&fileLocation, "fileLocation", "", "location of file to write in *required")
-	flag.IntVar(&pollInterval, "pollInterval", 15, "poll interval")
-	flag.BoolVar(&removeLastColumn, "removeLastColumn", true, "remove last column with timestamp")
+	flag.StringVar(&collectdURL, "collectd-url", "", "collectd URL *required")
+	flag.StringVar(&fileLocation, "file-location", "", "location of file to write in *required")
+	flag.IntVar(&pollInterval, "poll-interval", 15, "poll interval")
+	flag.BoolVar(&removeTimestamp, "remove-timestamp", true, "remove last column with timestamp")
 
 	flag.Parse()
 
 	if collectdURL == "" {
-		log.Fatalln("collectdURL is required param")
+		log.Fatalln("collectd-url is required param")
 	}
 
 	if fileLocation == "" {
-		log.Fatalln("fileLocation is required param")
+		log.Fatalln("file-location is required param")
 	}
 
 	for {
@@ -40,8 +40,8 @@ func main() {
 		}
 
 		if len(data) > 0 {
-			if removeLastColumn {
-				data = removeLastColumnFromData(data)
+			if removeTimestamp {
+				data = removeTimestampFromData(data)
 			}
 
 			err = writeToFile(fileLocation, data)
@@ -66,8 +66,8 @@ func getPrometheusData(collectdURL string) ([]byte, error) {
 	return ioutil.ReadAll(r.Body)
 }
 
-//removeLastColumnFromData deletes timestamp from each line
-func removeLastColumnFromData(data []byte) []byte {
+//removeTimestampFromData deletes timestamp from each line
+func removeTimestampFromData(data []byte) []byte {
 	lines := strings.Split(string(data), "\n")
 
 	updatedLines := make([]string, len(lines))

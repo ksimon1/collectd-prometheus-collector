@@ -53,7 +53,7 @@ func TestGetPrometheusData(t *testing.T) {
 }
 
 func TestRemoveLastColumnFromData(t *testing.T) {
-	updatedData := removeLastColumnFromData(rawTestData)
+	updatedData := removeTimestampFromData(rawTestData)
 	if string(updatedData) == string(rawTestData) {
 		t.Error("it must update the data")
 	}
@@ -62,12 +62,12 @@ func TestRemoveLastColumnFromData(t *testing.T) {
 		t.Error("it must have the last column removed")
 	}
 
-	updatedData = removeLastColumnFromData([]byte(immutableData))
+	updatedData = removeTimestampFromData([]byte(immutableData))
 	if string(updatedData) != immutableData {
 		t.Error("it must not update the immutable data")
 	}
 
-	updatedMixedData := removeLastColumnFromData([]byte(mixedData))
+	updatedMixedData := removeTimestampFromData([]byte(mixedData))
 	if string(updatedMixedData) != afterUpdateMixedData {
 		t.Error("it must correctly update the mixed data")
 	}
